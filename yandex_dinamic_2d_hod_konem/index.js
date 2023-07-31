@@ -13,36 +13,27 @@ parseStdin().then(text => {
 }).then(run)
 
 /**
-n - kol-vo strok
-m - kol-vo colonok
+n - кол-во строк
+m - кол-во колонок
 
 Краевые случаи:
-1) minimalyniy razmer 2x3, 3x2
+1) минимальный размер 2x3, 3x2
 
-Rasprostronenie - sverhu vniz
-dp - xranit kol-vo petey, kotorimi mogno v etu tochku pridti
+Распространение - сверху вниз
+dp - хранит кол-во путей, которыи можно в эту точку придти
 
-Uslivie prodolgeniya:
-1 - next.length === 0
+dp имеет нулевую колонку и строчку с индексами 0, чтобы не делать дополнительные условия в цикле
 */
 
 function run({ n, m }) {
-   const dp = Array(n).fill(0).map(_ => Array(m).fill(0))
+   const dp = Array(n + 1).fill(0).map(_ => Array(m + 1).fill(0))
 
-   let next = [[0,0]]
-
-   while(next.length > 0) {
-      for (let [n, m] of next) dp[n][m]++
-      next = next.map(makeNext).flat()
+   dp[1][1] = 1;
+   for (let nL = 2; nL <= n; nL++) {
+      for (let mL = 2; mL <= m; mL++) {
+         dp[nL][mL] = dp[nL - 1][mL - 2] + dp[nL - 2][mL - 1]
+      }
    }
 
-   console.log(dp[n - 1][m - 1])
-
-   function makeNext([nL, mL]) {
-      const result= [
-         [nL + 1, mL + 2], // shag 1 vniz i 2 vpravo
-         [nL + 2, mL + 1], // shag 2 vniz i 1 vpravo
-      ]         
-      return result.filter(([nL, mL]) => nL <= n - 1 && mL <= m - 1)
-   }
+   console.log(dp[n][m])
 }
